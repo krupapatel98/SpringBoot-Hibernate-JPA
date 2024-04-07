@@ -1,3 +1,115 @@
+# Read Me First
+
 # SpringBoot-Hibernate-JPA
 Spring boot project which depicts Hibernate and JPA.
-Hello
+
+### Reference Documentation
+For further reference, please consider the following sections:
+
+* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
+* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.2.1/maven-plugin/reference/html/)
+* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.2.1/maven-plugin/reference/html/#build-image)
+
+# Project Creation and software details 
+* **Technologies used -** JAVA, Springboot, MySQL, Maven
+* Create project using Spring Initializr - https://start.spring.io/
+
+
+### Setting up MySQL Database and Spring Boot Application
+
+* MYSQL includes two components - **MySQL Database Server and MySQL Workbench**
+* MySQL Database Server is the main engine of database. It stores data for database
+* MySQL Workbench is a GUI for interacting with the database
+* Add following dependencies in the project --
+  * MySQL Drivers - **_mysql-connector-j_**
+  * Spring Data JPA - **_spring-boot-starter-data-jpa_**
+* Add sql url, user and password in the application.properties file --
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/hb-advance-mappings
+spring.datasource.username=springstudent
+spring.datasource.password=springstudent
+```
+
+
+# JPA/ Hibernate Advanced Mappings
+* In the database, there are multiple tables and relationships between tables.
+* There are following advanced mapping techniques --
+    * One-to-One
+    * One-to-Many/ Many-to-One
+    * Many-to-Many
+
+### Entity Lifecycle
+* Following are the operations --
+1. **Detach** - If entity is detached, it is not associated with Hibernate session.
+2. **Merge** - If instance is detached from the session, then merge will reattach to session.
+3. **Persist** - Transitions new instances to managed state. Next flush/ commit will save in db.
+4. **Remove** - Transitions managed entity to be removed. Next flush/ commit will delete from db.
+5. **Refresh** - Reload/ sync object with data from db. Prevents stale data.
+
+### Cascade and its types --
+* Cascade means to apply same operations to related entities.
+* @OneToOne Cascade Types--
+    1. **PERSIST -** If entity is persisted/ saved, related entity will also be persisted.
+    2. **REMOVE -** If entity is removed/ deleted, related entity will also be deleted.
+    3. **REFRESH -** If entity is refreshed, related entity will also be refreshed.
+    4. **DETACH -** If entity is detached (not associated with session), then related entity will also be detached.
+    5. **MERGE -** If entity is merged, related entity will also be merged.
+    6. **ALL -** All the above cascade types.
+
+
+
+* **Syntax - @OneToOne(cascade=CascadeType.ALL).**
+* By default no operations are cascaded. 
+
+### Hibernate - Implementing One-to-One Mapping
+
+1. Create class named InstructorDetail and annotate it as **@Entity and @Table**.
+```java
+@Entity
+@Table(name = "instructor_detail")
+public class InstructorDetail {
+    // define fields and constructors
+    // annotate the fields with db column names
+}
+```
+2. Define various fields and annotate it with **@Id** for primary key and **@Column** for specifing database table column name for each fields.
+3. Define getter, setters, constructors and toString() method.
+
+**NOTE-** Refer InstructorDetails.java class.
+
+4. Define Instructor class and its fields and constructors.
+5. Define One-to-One mapping to the InstructorDetail table as follows -
+```java
+@Table(name = "instructor")
+public class Instructor{
+  // define fields and constructors
+  // annotate the fields with db column names
+
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "instructor_detail_id")
+  private InstructorDetail instructorDetail;
+}
+   
+    
+```
+6. Saved the details using persist() method in DAO.
+```java
+@Repository
+public class AppDAOImpl implements AppDAO{
+   //define field for Entity manager;
+    private EntityManager entityManager;
+
+    // injects entity manager using constructor injection
+    @Autowired
+    public AppDAOImpl(EntityManager entityManager){
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    @Transactional
+    public void save(Instructor instructor) {
+        entityManager.persist(instructor);
+    }
+}
+
+```
