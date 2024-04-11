@@ -2,6 +2,8 @@ package com.JPA_Hibernate.hibernate_JPA.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name= "course")
 public class Course {
@@ -15,6 +17,14 @@ public class Course {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
+
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "course_student",
+    joinColumns = @JoinColumn(name="course_id"),
+    inverseJoinColumns = @JoinColumn(name="student_id"))
+    private List<Student> students;
+
 
     public Course(){}
 
@@ -44,6 +54,14 @@ public class Course {
 
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 
     @Override

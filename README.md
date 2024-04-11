@@ -133,6 +133,8 @@ public class Course {
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
   @JoinColumn(name = "instructor_id")
   private Instructor instructor;
+
+  // define constructors, getters, setters and toString method
 }
 ```
 
@@ -144,6 +146,52 @@ public class Instructor {
   //...
   @OneToMany(mappedBy = "instructor", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
   private List<Course> courses;
-
+  
 }
 ```
+### Many-to-Many Mapping
+* Many-to-Many mapping is made between two entities when one entity has many instance of the other entity and vice versa.
+* In this type of mapping it is necessary to keep a track of the relations between the entities. Hence, a **join table** is required.
+* **Join Table-** it is a table that provides a mapping between two tables. It has foreign keys for each table to define the mapping relationship.
+* Add a **@ManyToMany** annotation, **@JoinTable** and inverseJoinColumns to implement this mapping.
+* inverse refers to the "other side" of the relationship.
+
+
+Defining Student class and adding @ManyToMany to Course class
+
+```java
+@Entity
+@Table(name="student")
+public class Student {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private int id;
+
+  @Column(name = "first_name")
+  private String firstName;
+
+  @Column(name = "last_name")
+  private String lastName;
+
+  @Column(name = "email")
+  private String email;
+    
+  // define constructors, getters, setters and toString method 
+}
+```
+
+```java
+@Entity
+@Table(name= "course")
+public class Course {
+  //... define fields
+
+  @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+  @JoinTable(name = "course_student",
+          joinColumns = @JoinColumn(name="course_id"),
+          inverseJoinColumns = @JoinColumn(name="student_id"))
+  private List<Student> students;
+}
+```
+
