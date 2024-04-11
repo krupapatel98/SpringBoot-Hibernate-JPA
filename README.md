@@ -113,3 +113,37 @@ public class AppDAOImpl implements AppDAO{
 }
 
 ```
+
+### One-to-Many or Many-to-One Mapping
+* It depicts that one row in a table is mapped or associated with multiple rows in other table.
+* It is implemented using **@ManyToOne**, **@OneToMany** and **@JoinColumn**
+
+```java
+
+@Entity
+@Table(name= "course")
+public class Course {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private int id;
+  @Column(name = "title")
+  private String title;
+  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+  @JoinColumn(name = "instructor_id")
+  private Instructor instructor;
+}
+```
+
+* Add following properties in the Instructor table -- 
+```java
+@Entity
+@Table(name= "instructor")
+public class Instructor {
+  //...
+  @OneToMany(mappedBy = "instructor", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+  private List<Course> courses;
+
+}
+```
