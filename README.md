@@ -195,3 +195,25 @@ public class Course {
 }
 ```
 
+### Fetch Types
+* There are 2 types of fetching the data.
+1. Eager - will retrieve everything
+2. Lazy - will retrieve on request. However, this requires an open hibernate session and needs an connection to database to retrieve data. If hibernate session is closed and attempt is made to retrieve lazy data then hibernate will throw an exception. 
+* When the mapping relationship is defined, the fetch type i.e. EAGER of LAZY can also be defined.
+
+```java
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+
+public class Instructor {
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")
+  private List<Course> courses;
+  //...
+}
+```
+* Following is the default fetch type for each mappings - 
+  * **@OneToOne -** FetchType.EAGER
+  * **@OneToMany -** FetchType.LAZY
+  * **@ManyToOne -** FetchType.EAGER
+  * **@ManyToMany -** FetchType.LAZY
+* Specifying the fetch type, overrides the default fetch type.
